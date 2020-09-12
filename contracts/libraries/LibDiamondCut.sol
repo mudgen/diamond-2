@@ -10,25 +10,14 @@ pragma experimental ABIEncoderV2;
 * This code is as complex as it is to reduce gas costs.
 /******************************************************************************/
 
-import {LibDiamondStorage} from "./LibDiamondStorage.sol";
+import "./LibDiamondStorage.sol";
+import "../interfaces/IDiamondCut.sol";
 
-library LibDiamond {
-    event DiamondCut(bytes[] _diamondCut, address _init, bytes _calldata);
+library LibDiamondCut {
+    event DiamondCut(IDiamondCut.Facet[] _diamondCut, address _init, bytes _calldata);
 
     bytes32 constant CLEAR_ADDRESS_MASK = bytes32(uint256(0xffffffffffffffffffffffff));
     bytes32 constant CLEAR_SELECTOR_MASK = bytes32(uint256(0xffffffff << 224));
-
-    // This struct is used to prevent getting the error "CompilerError: Stack too deep, try removing local variables."
-    // See this article: https://medium.com/1milliondevs/compilererror-stack-too-deep-try-removing-local-variables-solved-a6bcecc16231
-    struct SlotInfo {
-        uint256 originalSelectorCount;
-        uint256 newSelectorCount;
-        bytes32 selectorSlot;
-        uint256 oldSelectorsSlotCount;
-        uint256 oldSelectorsInSlot;
-        bytes32 oldSelectorSlot;
-        bool updateLastSlot;
-    }
 
     // Non-standard internal function version of diamondCut
     // This code is almost the same as externalCut, except it is using
@@ -36,7 +25,7 @@ library LibDiamond {
     // and it DOES issue the DiamondCut event
     // The code is duplicated to prevent copying calldata to memory which
     // causes an error for an array of bytes arrays.
-    function diamondCut(Facet[] memory _diamondCut) internal {
+    function diamondCut(IDiamondCut.Facet[] memory _diamondCut) internal {
         LibDiamondStorage.DiamondStorage storage ds = LibDiamondStorage.diamondStorage();
         bool updateLastSlot;
         uint256 originalSelectorCount = ds.selectorCount;

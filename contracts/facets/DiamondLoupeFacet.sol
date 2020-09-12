@@ -10,7 +10,7 @@ import "../libraries/LibDiamondStorage.sol";
 import "../interfaces/IDiamondLoupe.sol";
 import "../interfaces/IERC165.sol";
 
-contract DiamondFacet is IDiamondLoupe, IERC165 {
+contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     // Diamond Loupe Functions
     ////////////////////////////////////////////////////////////////////
     /// These functions are expected to be called frequently
@@ -18,6 +18,7 @@ contract DiamondFacet is IDiamondLoupe, IERC165 {
     /// packed for efficiency. That means no padding with zeros.
 
     // holder for variables to prevent stack too deep error
+    // See this: https://medium.com/1milliondevs/compilererror-stack-too-deep-try-removing-local-variables-solved-a6bcecc16231
     struct Vars {
         uint256 defaultSize;
         uint256 selectorCount;

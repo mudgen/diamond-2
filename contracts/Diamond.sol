@@ -9,10 +9,11 @@ pragma experimental ABIEncoderV2;
 /******************************************************************************/
 
 import "./libraries/LibDiamondStorage.sol";
-import "./libraries/LibDiamond.sol";
+import "./libraries/LibDiamondCut.sol";
 import "./facets/OwnershipFacet.sol";
-import "./facets/DiamondFacet.sol";
+import "./facets/DiamondLoupeFacet.sol";
 import "./facets/DiamondCutFacet.sol";
+import "./interfaces/IDiamondCut.sol";
 
 contract Diamond {
     event OwnershipTransferred(
@@ -25,44 +26,44 @@ contract Diamond {
             .diamondStorage();
         ds.contractOwner = owner;
         emit OwnershipTransferred(address(0), owner);
+                
+        DiamondCutFacet diamondCutFacet = new DiamondCutFacet();
 
-        //DiamondCutFacet diamondCutFacet = new DiamondCutFacet();
-
-        // Create a DiamondFacet contract which implements the Diamond interface
-        DiamondFacet diamondFacet = new DiamondFacet();
-
-        // Create a OwnershipFacet contract which implements the ERC-173 Ownership interface
+        DiamondLoupeFacet diamondLoupeFacet = new DiamondLoupeFacet();
+        
         OwnershipFacet ownershipFacet = new OwnershipFacet();
 
-        bytes[] memory cut = new bytes[](2);
+        IDiamondCut.Facet[] memory diamondCut = new IDiamondCut.Facet[](3);
 
-        // Adding diamond functions
-        cut[0] = abi.encodePacked(
-            diamondFacet,
-            //DiamondFacet.diamondCut.selector,
-            DiamondFacet.facetFunctionSelectors.selector,
-            DiamondFacet.facets.selector,
-            DiamondFacet.facetAddress.selector,
-            DiamondFacet.facetAddresses.selector,
-            DiamondFacet.supportsInterface.selector
-        );
+        // adding diamondCut function
+        diamondCut[0].facetAddress = address(diamondCutFacet);
+        diamondCut[0].functionSelectors = new bytes4[](1);
+        diamondCut[0].functionSelectors[0] = DiamondCutFacet.diamondCut.selector;
 
-        // Adding diamond ERC173 functions
-        cut[1] = abi.encodePacked(
-            ownershipFacet,
-            OwnershipFacet.transferOwnership.selector,
-            OwnershipFacet.owner.selector
-        );
+        // adding diamond loupe functions
+        diamondCut[1].facetAddress = address(diamondLoupeFacet);
+        diamondCut[1].functionSelectors = new bytes4[](5);
+        diamondCut[1].functionSelectors[0] = DiamondLoupeFacet.facetFunctionSelectors.selector;
+        diamondCut[1].functionSelectors[1] = DiamondLoupeFacet.facets.selector;
+        diamondCut[1].functionSelectors[2] = DiamondLoupeFacet.facetAddress.selector;
+        diamondCut[1].functionSelectors[3] = DiamondLoupeFacet.facetAddresses.selector;
+        diamondCut[1].functionSelectors[4] = DiamondLoupeFacet.supportsInterface.selector;
+
+        // adding ownership functions
+        diamondCut[2].facetAddress = address(ownershipFacet);
+        diamondCut[2].functionSelectors = new bytes4[](2);
+        diamondCut[2].functionSelectors[0] = OwnershipFacet.transferOwnership.selector;
+        diamondCut[2].functionSelectors[1] = OwnershipFacet.owner.selector;
 
         // execute non-standard internal diamondCut function to add functions
-        LibDiamond.diamondCut(cut);
+        LibDiamondCut.diamondCut(diamondCut);
 
         // adding ERC165 data
         // ERC165
         ds.supportedInterfaces[IERC165.supportsInterface.selector] = true;
 
         // DiamondCut
-        //ds.supportedInterfaces[DiamondFacet.diamondCut.selector] = true;
+        ds.supportedInterfaces[IDiamondCut.diamondCut.selector] = true;
 
         // DiamondLoupe
         bytes4 interfaceID = IDiamondLoupe.facets.selector ^
