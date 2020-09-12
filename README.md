@@ -4,11 +4,15 @@ This is the gas-optimized reference implementation for [EIP-2535 Diamond Standar
 
 Specifically this is a gas efficient implementation of the `diamondCut` function. Adding/replacing/removing is optimized to take the least gas.
 
+The loupe functions are NOT gas optimized. In this implementation the `facets`, `facetFunctionSelectors`, `facetAddresses` loupe functions are not meant to be called on-chain and may use too much gas or run out of gas when called in on-chain transactions. In this implementation these functions should be called by off-chain software like websites and Javascript libraries etc., where gas costs do not matter.
+
+However the `facetAddress` loupe function is gas efficient and can be called in on-chain transactions.
+
 The `diamondCut` implementation avoids storage read and writes. Fits 8 function selectors in a single storage slot. This is a gas optimization.
 
 The `contracts/Diamond.sol` file shows an example of implementing a diamond.
 
-The `contracts/facets/DiamondCutFacet.sol` file shows how to implement the `diamondCut`external function.
+The `contracts/facets/DiamondCutFacet.sol` file shows how to implement the `diamondCut` external function.
 
 The `contracts/facets/DiamondLoupeFacet.sol` file shows how to implement the four standard loupe functions.
 
@@ -28,9 +32,11 @@ The reference implementation is more than a reference implementation. It is the 
 
 Specifically you should copy and use the [DiamondCutFacet.sol](https://github.com/mudgen/gas-optimized-diamond-1/blob/master/contracts/facets/DiamondCutFacet.sol) and [DiamondLoupeFacet.sol](https://github.com/mudgen/Diamond/blob/master/contracts/facets/DiamondLoupeFacet.sol) contracts as is. They implement the `diamondCut` function and the loupe functions.
 
-The [Diamond.sol](https://github.com/mudgen/gas-optimized-diamond-1/blob/master/contracts/Diamond.sol) contract could be used as is, or it could be used as a starting point and customized.
+The [Diamond.sol](https://github.com/mudgen/gas-optimized-diamond-1/blob/master/contracts/Diamond.sol) contract could be used as is, or it could be used as a starting point and customized. This contract is the diamond. Its deployment creates a diamond. It's address is a stable diamond address that does not change.
 
 The [LibDiamondStorage.sol](https://github.com/mudgen/gas-optimized-diamond-1/blob/master/contracts/libraries/LibDiamondStorage.sol) library could be used as is. It shows how to implement Diamond Storage. This contract includes contract ownership which you might want to change if you want to implement DAO-based ownership or other form of contract ownership. Go for it. Diamonds can work with any kind of contract ownership strategy.
+
+The [LibDiamondCut.sol](https://github.com/mudgen/Diamond/blob/master/contracts/libraries/LibDiamond.sol) library contains an internal function version of `diamondCut` that can be used in the constructor of a diamond or other places.
 
 ## Calling Diamond Functions
 
