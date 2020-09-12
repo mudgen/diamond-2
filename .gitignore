@@ -6,3 +6,4 @@ stuff.txt
 deployment/deploy.js
 .vscode
 bin
+node_modules

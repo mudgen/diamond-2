@@ -12,6 +12,7 @@ import "./libraries/LibDiamondStorage.sol";
 import "./libraries/LibDiamond.sol";
 import "./facets/OwnershipFacet.sol";
 import "./facets/DiamondFacet.sol";
+import "./facets/DiamondCutFacet.sol";
 
 contract Diamond {
     event OwnershipTransferred(
@@ -25,6 +26,8 @@ contract Diamond {
         ds.contractOwner = owner;
         emit OwnershipTransferred(address(0), owner);
 
+        //DiamondCutFacet diamondCutFacet = new DiamondCutFacet();
+
         // Create a DiamondFacet contract which implements the Diamond interface
         DiamondFacet diamondFacet = new DiamondFacet();
 
@@ -36,7 +39,7 @@ contract Diamond {
         // Adding diamond functions
         cut[0] = abi.encodePacked(
             diamondFacet,
-            DiamondFacet.diamondCut.selector,
+            //DiamondFacet.diamondCut.selector,
             DiamondFacet.facetFunctionSelectors.selector,
             DiamondFacet.facets.selector,
             DiamondFacet.facetAddress.selector,
@@ -59,7 +62,7 @@ contract Diamond {
         ds.supportedInterfaces[IERC165.supportsInterface.selector] = true;
 
         // DiamondCut
-        ds.supportedInterfaces[DiamondFacet.diamondCut.selector] = true;
+        //ds.supportedInterfaces[DiamondFacet.diamondCut.selector] = true;
 
         // DiamondLoupe
         bytes4 interfaceID = IDiamondLoupe.facets.selector ^
