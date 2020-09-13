@@ -21,7 +21,11 @@ contract DiamondCutFacet is IDiamondCut {
     /// @param _init The address of the contract or facet to execute _calldata
     /// @param _calldata A function call, including function selector and arguments
     ///                  _calldata is executed with delegatecall on _init
-    function diamondCut(Facet[] calldata _diamondCut, address _init, bytes calldata _calldata) external override {
+    function diamondCut(
+        Facet[] calldata _diamondCut,
+        address _init,
+        bytes calldata _calldata
+    ) external override {
         externalCut(_diamondCut);
         emit DiamondCut(_diamondCut, _init, _calldata);
         if (_calldata.length > 0) {
@@ -41,26 +45,25 @@ contract DiamondCutFacet is IDiamondCut {
                     revert("DiamondFacet: _init function reverted");
                 }
             }
-        } 
-        // If _init is not address(0) but calldata is empty
-        else if (_init != address(0)) {
+        } else if (_init != address(0)) {
+            // If _init is not address(0) but calldata is empty
             revert("DiamondFacet: _calldata is empty");
         }
         // if _calldata is empty and _init is address(0)
         // then skip any initialization
     }
-    
+
     // diamondCut helper function
-    // This code is almost the same as the internal diamondCut function, 
-    // except it is using 'Facets[] calldata _diamondCut' instead of 
+    // This code is almost the same as the internal diamondCut function,
+    // except it is using 'Facets[] calldata _diamondCut' instead of
     // 'Facet[] memory _diamondCut', and it does not issue the DiamondCut event.
     // The code is duplicated to prevent copying calldata to memory which
     // causes a Solidity error for two dimensional arrays.
     function externalCut(Facet[] calldata _diamondCut) internal {
         LibDiamondStorage.DiamondStorage storage ds = LibDiamondStorage.diamondStorage();
         require(msg.sender == ds.contractOwner, "Must own the contract.");
-        bool updateLastSlot;        
-        uint originalSelectorCount = ds.selectorCount;
+        bool updateLastSlot;
+        uint256 originalSelectorCount = ds.selectorCount;
         // Get how many 32 byte slots are used
         uint256 selectorSlotCount = originalSelectorCount / 8;
         // Get how many function selectors are in the last 32 byte slot
@@ -76,7 +79,7 @@ contract DiamondCutFacet is IDiamondCut {
             if (newFacetAddress != address(0)) {
                 // add and replace selectors
                 for (uint256 selectorIndex; selectorIndex < _diamondCut[facetIndex].functionSelectors.length; selectorIndex++) {
-                    bytes4 selector = _diamondCut[facetIndex].functionSelectors[selectorIndex];                    
+                    bytes4 selector = _diamondCut[facetIndex].functionSelectors[selectorIndex];
                     bytes32 oldFacet = ds.facets[selector];
                     // add
                     if (oldFacet == 0) {
@@ -98,7 +101,7 @@ contract DiamondCutFacet is IDiamondCut {
                     } else {
                         // replace
                         //require(bytes20(oldFacet) != bytes20(newFacetAddress), "Function cut to same facet.");
-                        if(address(bytes20(oldFacet)) != newFacetAddress) {
+                        if (address(bytes20(oldFacet)) != newFacetAddress) {
                             // replace old facet address
                             ds.facets[selector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes32(bytes20(newFacetAddress));
                         }
@@ -111,7 +114,7 @@ contract DiamondCutFacet is IDiamondCut {
                     bytes4 selector = _diamondCut[facetIndex].functionSelectors[selectorIndex];
                     bytes32 oldFacet = ds.facets[selector];
                     // if function does not exist then do nothing and return
-                    if(oldFacet == 0) {
+                    if (oldFacet == 0) {
                         return;
                     }
                     if (selectorSlot == 0) {
@@ -119,8 +122,8 @@ contract DiamondCutFacet is IDiamondCut {
                         selectorSlot = ds.selectorSlots[selectorSlotCount];
                         selectorsInSlot = 8;
                     }
-                    uint oldSelectorsSlotCount = uint64(uint256(oldFacet));
-                    uint oldSelectorsInSlot = uint32(uint256(oldFacet >> 64));
+                    uint256 oldSelectorsSlotCount = uint64(uint256(oldFacet));
+                    uint256 oldSelectorsInSlot = uint32(uint256(oldFacet >> 64));
                     // gets the last selector in the slot
                     bytes4 lastSelector = bytes4(selectorSlot << ((selectorsInSlot - 1) * 32));
                     if (oldSelectorsSlotCount != selectorSlotCount) {
@@ -151,7 +154,7 @@ contract DiamondCutFacet is IDiamondCut {
                 }
             }
         }
-        uint newSelectorCount = selectorSlotCount * 8 + selectorsInSlot;
+        uint256 newSelectorCount = selectorSlotCount * 8 + selectorsInSlot;
         if (newSelectorCount != originalSelectorCount) {
             ds.selectorCount = newSelectorCount;
         }

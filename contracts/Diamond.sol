@@ -16,21 +16,17 @@ import "./facets/DiamondCutFacet.sol";
 import "./interfaces/IDiamondCut.sol";
 
 contract Diamond {
-    event OwnershipTransferred(
-        address indexed previousOwner,
-        address indexed newOwner
-    );
+    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
 
     constructor(address owner) payable {
-        LibDiamondStorage.DiamondStorage storage ds = LibDiamondStorage
-            .diamondStorage();
+        LibDiamondStorage.DiamondStorage storage ds = LibDiamondStorage.diamondStorage();
         ds.contractOwner = owner;
         emit OwnershipTransferred(address(0), owner);
-                
+
         DiamondCutFacet diamondCutFacet = new DiamondCutFacet();
 
         DiamondLoupeFacet diamondLoupeFacet = new DiamondLoupeFacet();
-        
+
         OwnershipFacet ownershipFacet = new OwnershipFacet();
 
         IDiamondCut.Facet[] memory diamondCut = new IDiamondCut.Facet[](3);
@@ -73,8 +69,7 @@ contract Diamond {
         ds.supportedInterfaces[interfaceID] = true;
 
         // ERC173
-        ds.supportedInterfaces[IERC173.transferOwnership.selector ^
-            IERC173.owner.selector] = true;
+        ds.supportedInterfaces[IERC173.transferOwnership.selector ^ IERC173.owner.selector] = true;
     }
 
     // Find facet for function that is called and execute the
