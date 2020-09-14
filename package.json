@@ -1,6 +1,6 @@
 {
   "name": "gas-optimized-diamond-1",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Gas-optimized diamond for adding/replacing/removing functions.",
   "main": "index.js",
   "scripts": {
