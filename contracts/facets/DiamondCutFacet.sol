@@ -8,6 +8,7 @@ pragma experimental ABIEncoderV2;
 
 import "../interfaces/IDiamondCut.sol";
 import "../libraries/LibDiamondStorage.sol";
+import "../libraries/LibDiamondCut.sol";
 
 contract DiamondCutFacet is IDiamondCut {
     // Constants used by diamondCut
@@ -29,14 +30,12 @@ contract DiamondCutFacet is IDiamondCut {
         externalCut(_diamondCut);
         emit DiamondCut(_diamondCut, _init, _calldata);
         if (_calldata.length > 0) {
-            address init = _init == address(0) ? address(this) : _init;
-            // Check that init has contract code
-            uint256 contractSize;
-            assembly {
-                contractSize := extcodesize(init)
+            if (_init != address(0)) {
+                LibDiamondCut.hasContractCode(_init, "DiamondCutFacet: _init address has no code");
+            } else {
+                _init = address(this);
             }
-            require(contractSize > 0, "DiamondFacet: _init address has no code");
-            (bool success, bytes memory error) = init.delegatecall(_calldata);
+            (bool success, bytes memory error) = _init.delegatecall(_calldata);
             if (!success) {
                 if (error.length > 0) {
                     // bubble up the error
@@ -77,6 +76,7 @@ contract DiamondCutFacet is IDiamondCut {
             address newFacetAddress = _diamondCut[facetIndex].facetAddress;
             // adding or replacing functions
             if (newFacetAddress != address(0)) {
+                LibDiamondCut.hasContractCode(newFacetAddress, "DiamondCutFacet: facet has no code");
                 // add and replace selectors
                 for (uint256 selectorIndex; selectorIndex < _diamondCut[facetIndex].functionSelectors.length; selectorIndex++) {
                     bytes4 selector = _diamondCut[facetIndex].functionSelectors[selectorIndex];

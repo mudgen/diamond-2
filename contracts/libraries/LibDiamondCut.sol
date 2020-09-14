@@ -42,6 +42,7 @@ library LibDiamondCut {
             address newFacetAddress = _diamondCut[facetIndex].facetAddress;
             // adding or replacing functions
             if (newFacetAddress != address(0)) {
+                hasContractCode(newFacetAddress, "LibDiamondCut: facet has no code");
                 // add and replace selectors
                 for (uint256 selectorIndex; selectorIndex < _diamondCut[facetIndex].functionSelectors.length; selectorIndex++) {
                     bytes4 selector = _diamondCut[facetIndex].functionSelectors[selectorIndex];
@@ -123,5 +124,13 @@ library LibDiamondCut {
             ds.selectorSlots[selectorSlotCount] = selectorSlot;
         }
         emit DiamondCut(_diamondCut, address(0), new bytes(0));
+    }
+
+    function hasContractCode(address _contract, string memory _errorMessage) internal view {
+        uint256 contractSize;
+        assembly {
+            contractSize := extcodesize(_contract)
+        }
+        require(contractSize > 0, _errorMessage);
     }
 }
