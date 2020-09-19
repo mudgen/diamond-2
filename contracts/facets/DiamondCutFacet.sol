@@ -110,7 +110,7 @@ contract DiamondCutFacet is IDiamondCut {
                     bytes32 oldFacet = ds.facets[selector];
                     // if function does not exist then do nothing and return
                     if (oldFacet == 0) {
-                        return;
+                        continue;
                     }
                     if (selectorSlot == 0) {
                         selectorSlotCount--;
