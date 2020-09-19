@@ -66,7 +66,6 @@ library LibDiamondCut {
                         }
                     } else {
                         // replace
-                        //require(bytes20(oldFacet) != bytes20(newFacetAddress), "Function cut to same facet.");
                         if (address(bytes20(oldFacet)) != newFacetAddress) {
                             // replace old facet address
                             ds.facets[selector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes32(bytes20(newFacetAddress));
