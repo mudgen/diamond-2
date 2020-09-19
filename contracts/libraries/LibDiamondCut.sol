@@ -78,6 +78,10 @@ library LibDiamondCut {
                 for (uint256 selectorIndex; selectorIndex < _diamondCut[facetIndex].functionSelectors.length; selectorIndex++) {
                     bytes4 selector = _diamondCut[facetIndex].functionSelectors[selectorIndex];
                     bytes32 oldFacet = ds.facets[selector];
+                    // if function does not exist then do nothing
+                    if (oldFacet == 0) {
+                        continue;
+                    }
                     if (selectorSlot == 0) {
                         selectorSlotCount--;
                         selectorSlot = ds.selectorSlots[selectorSlotCount];
