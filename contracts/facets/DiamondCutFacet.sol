@@ -129,14 +129,13 @@ contract DiamondCutFacet is IDiamondCut {
                             (bytes32(lastSelector) >> (oldSelectorsInSlot * 32));
                         // update storage with the modified slot
                         ds.selectorSlots[oldSelectorsSlotCount] = oldSelectorSlot;
-                        selectorsInSlot--;
                     } else {
                         // clears the selector we are deleting and puts the last selector in its place.
                         selectorSlot =
                             (selectorSlot & ~(CLEAR_SELECTOR_MASK >> (oldSelectorsInSlot * 32))) |
                             (bytes32(lastSelector) >> (oldSelectorsInSlot * 32));
-                        selectorsInSlot--;
                     }
+                    selectorsInSlot--;
                     if (selectorsInSlot == 0) {
                         delete ds.selectorSlots[selectorSlotCount];
                         selectorSlot = 0;
