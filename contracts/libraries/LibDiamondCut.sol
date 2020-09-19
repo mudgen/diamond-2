@@ -21,10 +21,10 @@ library LibDiamondCut {
 
     // Non-standard internal function version of diamondCut
     // This code is almost the same as externalCut, except it is using
-    // 'bytes[] memory _diamondCut' instead of 'bytes[] calldata _diamondCut'
+    // Facet[] memory _diamondCut' instead of Facet[] calldata _diamondCut'
     // and it DOES issue the DiamondCut event
     // The code is duplicated to prevent copying calldata to memory which
-    // causes an error for an array of bytes arrays.
+    // causes an error for a two dimensional array.
     function diamondCut(IDiamondCut.Facet[] memory _diamondCut) internal {
         LibDiamondStorage.DiamondStorage storage ds = LibDiamondStorage.diamondStorage();
         bool updateLastSlot;
