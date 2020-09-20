@@ -28,7 +28,7 @@ To understand the code of this implementation it is recommended to first underst
 
 1. The most important thing is reading and understanding the [Diamond Standard](https://github.com/ethereum/EIPs/issues/2535). If something is unclear let me know!
 
-2. The second important thing is using the Diamond Standard reference implementation. You are at the right place because this is the README for the gas-optimized reference implementation.
+2. The second important thing is using an EIP-2535 Diamond Standard reference implementation. You are at the right place because this is the README for the gas-optimized reference implementation.
 
 A diamond reference implementation is more than a reference implementation. It is the boilerplate code you need for a diamond. Also, using a reference implementation ensures your diamond is compliant with EIP-2535 Diamond Standard.
 
