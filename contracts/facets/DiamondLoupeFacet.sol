@@ -17,13 +17,6 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     /// by tools. Therefore the return values are tightly
     /// packed for efficiency. That means no padding with zeros.
 
-    // holder for variables to prevent stack too deep error
-    // See this: https://medium.com/1milliondevs/compilererror-stack-too-deep-try-removing-local-variables-solved-a6bcecc16231
-    struct Vars {
-        uint256 defaultSize;
-        uint256 selectorCount;
-    }
-
     // struct Facet {
     //     address facetAddress;
     //     bytes4[] functionSelectors;
@@ -32,40 +25,23 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     /// @return facets_ Facet
     function facets() external override view returns (Facet[] memory facets_) {
         LibDiamondStorage.DiamondStorage storage ds = LibDiamondStorage.diamondStorage();
-        Vars memory vars;
-        vars.selectorCount = ds.selectorCount;
-        // get default size of arrays
-        vars.defaultSize = vars.selectorCount;
-        if (vars.defaultSize > 20) {
-            vars.defaultSize = 20;
-        }
-        facets_ = new Facet[](vars.defaultSize);
-        uint8[] memory numFacetSelectors = new uint8[](vars.defaultSize);
+        facets_ = new Facet[](ds.selectorCount);
+        uint8[] memory numFacetSelectors = new uint8[](ds.selectorCount);
         uint256 numFacets;
         uint256 selectorIndex;
         // loop through function selectors
-        for (uint256 slotIndex; selectorIndex < vars.selectorCount; slotIndex++) {
+        for (uint256 slotIndex; selectorIndex < ds.selectorCount; slotIndex++) {
             bytes32 slot = ds.selectorSlots[slotIndex];
             for (uint256 selectorSlotIndex; selectorSlotIndex < 8; selectorSlotIndex++) {
                 selectorIndex++;
-                if (selectorIndex > vars.selectorCount) {
+                if (selectorIndex > ds.selectorCount) {
                     break;
                 }
                 bytes4 selector = bytes4(slot << (selectorSlotIndex * 32));
-                address facet = address(bytes20(ds.facets[selector]));
+                address facetAddress = address(bytes20(ds.facets[selector]));
                 bool continueLoop = false;
                 for (uint256 facetIndex; facetIndex < numFacets; facetIndex++) {
-                    if (facets_[facetIndex].facetAddress == facet) {
-                        uint256 arrayLength = facets_[facetIndex].functionSelectors.length;
-                        // if array is too small then enlarge it
-                        if (numFacetSelectors[facetIndex] + 1 > arrayLength) {
-                            bytes4[] memory biggerArray = new bytes4[](arrayLength + vars.defaultSize);
-                            // copy contents of old array
-                            for (uint256 i; i < arrayLength; i++) {
-                                biggerArray[i] = facets_[facetIndex].functionSelectors[i];
-                            }
-                            facets_[facetIndex].functionSelectors = biggerArray;
-                        }
+                    if (facets_[facetIndex].facetAddress == facetAddress) {
                         facets_[facetIndex].functionSelectors[numFacetSelectors[facetIndex]] = selector;
                         // probably will never have more than 255 functions from one facet contract
                         require(numFacetSelectors[facetIndex] < 255);
@@ -78,20 +54,8 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
                     continueLoop = false;
                     continue;
                 }
-                uint256 arrayLength = facets_.length;
-                // if array is too small then enlarge it
-                if (numFacets + 1 > arrayLength) {
-                    Facet[] memory biggerArray = new Facet[](arrayLength + vars.defaultSize);
-                    uint8[] memory biggerArray2 = new uint8[](arrayLength + vars.defaultSize);
-                    for (uint256 i; i < arrayLength; i++) {
-                        biggerArray[i] = facets_[i];
-                        biggerArray2[i] = numFacetSelectors[i];
-                    }
-                    facets_ = biggerArray;
-                    numFacetSelectors = biggerArray2;
-                }
-                facets_[numFacets].facetAddress = facet;
-                facets_[numFacets].functionSelectors = new bytes4[](vars.defaultSize);
+                facets_[numFacets].facetAddress = facetAddress;
+                facets_[numFacets].functionSelectors = new bytes4[](ds.selectorCount);
                 facets_[numFacets].functionSelectors[0] = selector;
                 numFacetSelectors[numFacets] = 1;
                 numFacets++;
@@ -116,17 +80,15 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     /// @return _facetFunctionSelectors The selectors associated with a facet address.
     function facetFunctionSelectors(address _facet) external override view returns (bytes4[] memory _facetFunctionSelectors) {
         LibDiamondStorage.DiamondStorage storage ds = LibDiamondStorage.diamondStorage();
-        uint256 selectorCount = ds.selectorCount;
-
         uint256 numSelectors;
-        _facetFunctionSelectors = new bytes4[](selectorCount);
+        _facetFunctionSelectors = new bytes4[](ds.selectorCount);
         uint256 selectorIndex;
         // loop through function selectors
-        for (uint256 slotIndex; selectorIndex < selectorCount; slotIndex++) {
+        for (uint256 slotIndex; selectorIndex < ds.selectorCount; slotIndex++) {
             bytes32 slot = ds.selectorSlots[slotIndex];
             for (uint256 selectorSlotIndex; selectorSlotIndex < 8; selectorSlotIndex++) {
                 selectorIndex++;
-                if (selectorIndex > selectorCount) {
+                if (selectorIndex > ds.selectorCount) {
                     break;
                 }
                 bytes4 selector = bytes4(slot << (selectorSlotIndex * 32));
@@ -147,24 +109,22 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     /// @return facetAddresses_
     function facetAddresses() external override view returns (address[] memory facetAddresses_) {
         LibDiamondStorage.DiamondStorage storage ds = LibDiamondStorage.diamondStorage();
-        uint256 selectorCount = ds.selectorCount;
-
-        facetAddresses_ = new address[](selectorCount);
+        facetAddresses_ = new address[](ds.selectorCount);
         uint256 numFacets;
         uint256 selectorIndex;
         // loop through function selectors
-        for (uint256 slotIndex; selectorIndex < selectorCount; slotIndex++) {
+        for (uint256 slotIndex; selectorIndex < ds.selectorCount; slotIndex++) {
             bytes32 slot = ds.selectorSlots[slotIndex];
             for (uint256 selectorSlotIndex; selectorSlotIndex < 8; selectorSlotIndex++) {
                 selectorIndex++;
-                if (selectorIndex > selectorCount) {
+                if (selectorIndex > ds.selectorCount) {
                     break;
                 }
                 bytes4 selector = bytes4(slot << (selectorSlotIndex * 32));
-                address facet = address(bytes20(ds.facets[selector]));
+                address facetAddress = address(bytes20(ds.facets[selector]));
                 bool continueLoop = false;
                 for (uint256 facetIndex; facetIndex < numFacets; facetIndex++) {
-                    if (facet == facetAddresses_[facetIndex]) {
+                    if (facetAddress == facetAddresses_[facetIndex]) {
                         continueLoop = true;
                         break;
                     }
@@ -173,7 +133,7 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
                     continueLoop = false;
                     continue;
                 }
-                facetAddresses_[numFacets] = facet;
+                facetAddresses_[numFacets] = facetAddress;
                 numFacets++;
             }
         }
@@ -186,10 +146,10 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
     /// @notice Gets the facet that supports the given selector.
     /// @dev If facet is not found return address(0).
     /// @param _functionSelector The function selector.
-    /// @return The facet address.
-    function facetAddress(bytes4 _functionSelector) external override view returns (address) {
+    /// @return facetAddress_ The facet address.
+    function facetAddress(bytes4 _functionSelector) external override view returns (address facetAddress_) {
         LibDiamondStorage.DiamondStorage storage ds = LibDiamondStorage.diamondStorage();
-        return address(bytes20(ds.facets[_functionSelector]));
+        facetAddress_ = address(bytes20(ds.facets[_functionSelector]));
     }
 
     // This implements ERC-165.
