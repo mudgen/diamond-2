@@ -96,6 +96,7 @@ contract DiamondCutFacet is IDiamondCut {
                         }
                     } else {
                         // replace
+                        require(address(bytes20(oldFacet)) != address(this), "DiamondCutFacet: Can't replace immutable function");
                         if (address(bytes20(oldFacet)) != newFacetAddress) {
                             // replace old facet address
                             ds.facets[selector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes32(bytes20(newFacetAddress));
@@ -112,6 +113,7 @@ contract DiamondCutFacet is IDiamondCut {
                     if (oldFacet == 0) {
                         continue;
                     }
+                    require(address(bytes20(oldFacet)) != address(this), "DiamondCutFacet: Can't remove immutable function");
                     if (selectorSlot == 0) {
                         selectorSlotCount--;
                         selectorSlot = ds.selectorSlots[selectorSlotCount];
