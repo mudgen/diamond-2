@@ -11,10 +11,6 @@ import "../libraries/LibDiamondStorage.sol";
 import "../libraries/LibDiamondCut.sol";
 
 contract DiamondCutFacet is IDiamondCut {
-    // Constants used by diamondCut
-    bytes32 constant CLEAR_ADDRESS_MASK = bytes32(uint256(0xffffffffffffffffffffffff));
-    bytes32 constant CLEAR_SELECTOR_MASK = bytes32(uint256(0xffffffff << 224));
-
     // Standard diamondCut external function
     /// @notice Add/replace/remove any number of functions and optionally execute
     ///         a function with delegatecall
