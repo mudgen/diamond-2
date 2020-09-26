@@ -121,6 +121,7 @@ library LibDiamondCut {
                 bytes4 lastSelector;
                 uint256 oldSelectorsSlotCount;
                 uint256 oldSelectorSlotPosition;
+                // adding a block here prevents stack too deep error
                 {
                     bytes4 selector = _selectors[selectorIndex];
                     bytes32 oldFacet = ds.facets[selector];
