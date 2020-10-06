@@ -116,8 +116,7 @@ library LibDiamond {
         bytes4[] memory _selectors
     ) internal returns (uint256, bytes32) {
         DiamondStorage storage ds = diamondStorage();
-        require(_selectors.length > 0, "LibDiamondCut: No selectors in facet to cut");
-        // add functions
+        require(_selectors.length > 0, "LibDiamondCut: No selectors in facet to cut");        
         if (_action == IDiamondCut.FacetCutAction.Add) {
             require(_newFacetAddress != address(0), "LibDiamondCut: Add facet can't be address(0)");
             enforceHasContractCode(_newFacetAddress, "LibDiamondCut: Add facet has no code");
