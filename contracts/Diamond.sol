@@ -21,14 +21,14 @@ contract Diamond {
 
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
 
-       // adding ERC165 data
+        // adding ERC165 data
         // ERC165
         ds.supportedInterfaces[IERC165.supportsInterface.selector] = true;
 
         // DiamondCut
         ds.supportedInterfaces[IDiamondCut.diamondCut.selector] = true;
 
-        // DiamondLoupe        
+        // DiamondLoupe
         ds.supportedInterfaces[
             IDiamondLoupe.facets.selector ^
             IDiamondLoupe.facetFunctionSelectors.selector ^
