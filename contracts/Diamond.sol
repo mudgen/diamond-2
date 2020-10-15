@@ -3,9 +3,9 @@ pragma solidity ^0.7.1;
 pragma experimental ABIEncoderV2;
 
 /******************************************************************************\
-* Author: Nick Mudge
+* Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
 *
-* Implementation of an example of a diamond.
+* Implementation of a diamond.
 /******************************************************************************/
 
 import "./libraries/LibDiamond.sol";
