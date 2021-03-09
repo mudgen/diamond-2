@@ -76,7 +76,7 @@ If you need help or would like to discuss diamonds then send me a message [on tw
 
 ## Author
 
-This diamond implementation was written by Nick Mudge.
+This example diamond implementation was written by Nick Mudge.
 
 Contact:
 
