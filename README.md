@@ -30,7 +30,7 @@ To understand the code of this implementation it is recommended to first underst
 
 2. The second important thing is using an EIP-2535 Diamond Standard reference implementation. You are at the right place because this is the README for the gas-optimized reference implementation.
 
-A diamond reference implementation is more than a reference implementation. It is the boilerplate code you need for a diamond. Also, using a reference implementation ensures your diamond is compliant with EIP-2535 Diamond Standard.
+This diamond implementation is boilerplate code that makes a diamond compliant with EIP-2535 Diamond Standard.
 
 Specifically you can copy and use the [DiamondCutFacet.sol](./contracts/facets/DiamondCutFacet.sol) and [DiamondLoupeFacet.sol](./contracts/facets/DiamondLoupeFacet.sol) contracts as is. They implement the `diamondCut` function and the loupe functions.
 
@@ -76,7 +76,7 @@ If you need help or would like to discuss diamonds then send me a message [on tw
 
 ## Author
 
-The diamond standard and reference implementation were written by Nick Mudge.
+This diamond implementation was written by Nick Mudge.
 
 Contact:
 
