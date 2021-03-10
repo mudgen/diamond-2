@@ -60,6 +60,13 @@ Similarly you need to use the ABI of a facet in Solidity code in order to call f
 string result = MyUsefulFacet(diamondAddress).getResult()
 ```
 
+## Run the Unit Tests
+Start the ganache-cli node by opening a terminal and typing:
+```npm run start```
+
+Once ganache-cli is launched, open another terminal and type:
+```npm run test```
+
 ## Get Help and Join the Community
 
 If you need help or would like to discuss diamonds then send me a message [on twitter](https://twitter.com/mudgen), or [email me](mailto:nick@perfectabstractions.com). Or join the [Diamond Standard Discord server](https://discord.gg/kQewPw2).
