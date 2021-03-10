@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "prettier": "prettier --write contracts/**/*.sol",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./start-ganache.js",
+    "test": "truffle test"
   },
   "author": "",
   "license": "ISC",
@@ -18,6 +19,7 @@
   "devDependencies": {
     "@codechecks/client": "^0.1.10",
     "eth-gas-reporter": "^0.2.17",
+    "ganache-cli": "^6.12.2",
     "prettier": "^2.1.1",
     "prettier-plugin-solidity": "^1.0.0-alpha.57",
     "standard": "^14.3.4",
