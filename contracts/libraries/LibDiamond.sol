@@ -57,11 +57,6 @@ library LibDiamond {
         require(msg.sender == diamondStorage().contractOwner, "LibDiamond: Must be contract owner");
     }
 
-    modifier onlyOwner {
-        require(msg.sender == diamondStorage().contractOwner, "LibDiamond: Must be contract owner");
-        _;
-    }
-
     event DiamondCut(IDiamondCut.FacetCut[] _diamondCut, address _init, bytes _calldata);
 
     bytes32 constant CLEAR_ADDRESS_MASK = bytes32(uint256(0xffffffffffffffffffffffff));
