@@ -25,7 +25,6 @@ library LibDiamond {
         mapping(uint256 => bytes32) selectorSlots;
         // The number of function selectors in selectorSlots
         uint16 selectorCount;
-        // owner of the contract
         // Used to query if a contract implements an interface.
         // Used to implement ERC-165.
         mapping(bytes4 => bool) supportedInterfaces;
