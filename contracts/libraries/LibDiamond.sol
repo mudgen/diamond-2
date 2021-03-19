@@ -149,12 +149,13 @@ library LibDiamond {
             uint256 selectorSlotCount = _selectorCount / 8;
             uint256 selectorInSlotIndex = _selectorCount % 8;
             for (uint256 selectorIndex; selectorIndex < _selectors.length; selectorIndex++) {
-                selectorInSlotIndex--;
                 if (_selectorSlot == 0) {
                     // get last selectorSlot
                     selectorSlotCount--;
                     _selectorSlot = ds.selectorSlots[selectorSlotCount];
                     selectorInSlotIndex = 7;
+                } else {
+                    selectorInSlotIndex--;
                 }
                 bytes4 lastSelector;
                 uint256 oldSelectorsSlotCount;
