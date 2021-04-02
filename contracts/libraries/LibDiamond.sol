@@ -145,13 +145,15 @@ library LibDiamond {
         } else if (_action == IDiamondCut.FacetCutAction.Remove) {
             require(_newFacetAddress == address(0), "LibDiamondCut: Remove facet address must be address(0)");
             uint256 selectorSlotCount = _selectorCount / 8;
-            uint256 selectorInSlotIndex = (_selectorCount % 8) - 1;
+            uint256 selectorInSlotIndex = _selectorCount % 8;
             for (uint256 selectorIndex; selectorIndex < _selectors.length; selectorIndex++) {
                 if (_selectorSlot == 0) {
                     // get last selectorSlot
                     selectorSlotCount--;
                     _selectorSlot = ds.selectorSlots[selectorSlotCount];
                     selectorInSlotIndex = 7;
+                } else {
+                    selectorInSlotIndex--;
                 }
                 bytes4 lastSelector;
                 uint256 oldSelectorsSlotCount;
@@ -193,9 +195,8 @@ library LibDiamond {
                     delete ds.selectorSlots[selectorSlotCount];
                     _selectorSlot = 0;
                 }
-                selectorInSlotIndex--;
             }
-            _selectorCount = selectorSlotCount * 8 + selectorInSlotIndex + 1;
+            _selectorCount = selectorSlotCount * 8 + selectorInSlotIndex;
         } else {
             revert("LibDiamondCut: Incorrect FacetCutAction");
         }
