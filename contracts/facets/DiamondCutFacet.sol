@@ -30,7 +30,7 @@ contract DiamondCutFacet is IDiamondCut {
         // Check if last selector slot is not full
         if (selectorCount % 8 > 0) {
             // get last selectorSlot
-            selectorSlot = ds.selectorSlots[selectorCount / 8];
+            selectorSlot = ds.selectorSlots[selectorCount >> 3];
         }
         // loop through diamond cut
         for (uint256 facetIndex; facetIndex < _diamondCut.length; facetIndex++) {
@@ -47,7 +47,7 @@ contract DiamondCutFacet is IDiamondCut {
         }
         // If last selector slot is not full
         if (selectorCount % 8 > 0) {
-            ds.selectorSlots[selectorCount / 8] = selectorSlot;
+            ds.selectorSlots[selectorCount >> 3] = selectorSlot;
         }
         emit DiamondCut(_diamondCut, _init, _calldata);
         LibDiamond.initializeDiamondCut(_init, _calldata);
