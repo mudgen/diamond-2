@@ -79,7 +79,7 @@ library LibDiamond {
         // Check if last selector slot is not full
         if (selectorCount & 7 > 0) {
             // get last selectorSlot
-            selectorSlot = ds.selectorSlots[selectorCount / 8];
+            selectorSlot = ds.selectorSlots[selectorCount >> 3];
         }
         // loop through diamond cut
         for (uint256 facetIndex; facetIndex < _diamondCut.length; facetIndex++) {
@@ -96,7 +96,7 @@ library LibDiamond {
         }
         // If last selector slot is not full
         if (selectorCount & 7 > 0) {
-            ds.selectorSlots[selectorCount / 8] = selectorSlot;
+            ds.selectorSlots[selectorCount >> 3] = selectorSlot;
         }
         emit DiamondCut(_diamondCut, _init, _calldata);
         initializeDiamondCut(_init, _calldata);
@@ -124,7 +124,7 @@ library LibDiamond {
                 _selectorSlot = (_selectorSlot & ~(CLEAR_SELECTOR_MASK >> selectorInSlotPosition)) | (bytes32(selector) >> selectorInSlotPosition);
                 // if slot is full then write it to storage
                 if (selectorInSlotPosition == 224) {
-                    ds.selectorSlots[_selectorCount / 8] = _selectorSlot;
+                    ds.selectorSlots[_selectorCount >> 3] = _selectorSlot;
                     _selectorSlot = 0;
                 }
                 _selectorCount++;
@@ -144,7 +144,7 @@ library LibDiamond {
             }
         } else if (_action == IDiamondCut.FacetCutAction.Remove) {
             require(_newFacetAddress == address(0), "LibDiamondCut: Remove facet address must be address(0)");
-            uint256 selectorSlotCount = _selectorCount / 8;
+            uint256 selectorSlotCount = _selectorCount >> 3;
             uint256 selectorInSlotIndex = _selectorCount & 7;
             for (uint256 selectorIndex; selectorIndex < _selectors.length; selectorIndex++) {
                 if (_selectorSlot == 0) {
@@ -174,7 +174,7 @@ library LibDiamond {
                     }
                     delete ds.facets[selector];
                     uint256 oldSelectorCount = uint16(uint256(oldFacet));
-                    oldSelectorsSlotCount = oldSelectorCount / 8;
+                    oldSelectorsSlotCount = oldSelectorCount >> 3;
                     oldSelectorInSlotPosition = (oldSelectorCount & 7) * 32;
                 }
                 if (oldSelectorsSlotCount != selectorSlotCount) {
