@@ -77,7 +77,7 @@ library LibDiamond {
         uint256 selectorCount = originalSelectorCount;
         bytes32 selectorSlot;
         // Check if last selector slot is not full
-        if (selectorCount % 8 > 0) {
+        if (selectorCount & 7 > 0) {
             // get last selectorSlot
             selectorSlot = ds.selectorSlots[selectorCount >> 3];
         }
@@ -95,7 +95,7 @@ library LibDiamond {
             ds.selectorCount = uint16(selectorCount);
         }
         // If last selector slot is not full
-        if (selectorCount % 8 > 0) {
+        if (selectorCount & 7 > 0) {
             ds.selectorSlots[selectorCount >> 3] = selectorSlot;
         }
         emit DiamondCut(_diamondCut, _init, _calldata);
@@ -119,7 +119,7 @@ library LibDiamond {
                 require(address(bytes20(oldFacet)) == address(0), "LibDiamondCut: Can't add function that already exists");
                 // add facet for selector
                 ds.facets[selector] = bytes20(_newFacetAddress) | bytes32(_selectorCount);
-                uint256 selectorInSlotPosition = (_selectorCount % 8) * 32;
+                uint256 selectorInSlotPosition = (_selectorCount & 7) * 32;
                 // clear selector position in slot and add selector
                 _selectorSlot = (_selectorSlot & ~(CLEAR_SELECTOR_MASK >> selectorInSlotPosition)) | (bytes32(selector) >> selectorInSlotPosition);
                 // if slot is full then write it to storage
@@ -145,7 +145,7 @@ library LibDiamond {
         } else if (_action == IDiamondCut.FacetCutAction.Remove) {
             require(_newFacetAddress == address(0), "LibDiamondCut: Remove facet address must be address(0)");
             uint256 selectorSlotCount = _selectorCount >> 3;
-            uint256 selectorInSlotIndex = _selectorCount % 8;
+            uint256 selectorInSlotIndex = _selectorCount & 7;
             for (uint256 selectorIndex; selectorIndex < _selectors.length; selectorIndex++) {
                 if (_selectorSlot == 0) {
                     // get last selectorSlot
@@ -175,7 +175,7 @@ library LibDiamond {
                     delete ds.facets[selector];
                     uint256 oldSelectorCount = uint16(uint256(oldFacet));
                     oldSelectorsSlotCount = oldSelectorCount >> 3;
-                    oldSelectorInSlotPosition = (oldSelectorCount % 8) * 32;
+                    oldSelectorInSlotPosition = (oldSelectorCount & 7) * 32;
                 }
                 if (oldSelectorsSlotCount != selectorSlotCount) {
                     bytes32 oldSelectorSlot = ds.selectorSlots[oldSelectorsSlotCount];

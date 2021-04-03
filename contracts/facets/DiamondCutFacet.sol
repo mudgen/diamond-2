@@ -28,7 +28,7 @@ contract DiamondCutFacet is IDiamondCut {
         uint256 selectorCount = originalSelectorCount;
         bytes32 selectorSlot;
         // Check if last selector slot is not full
-        if (selectorCount % 8 > 0) {
+        if (selectorCount & 7 > 0) {
             // get last selectorSlot
             selectorSlot = ds.selectorSlots[selectorCount >> 3];
         }
@@ -46,7 +46,7 @@ contract DiamondCutFacet is IDiamondCut {
             ds.selectorCount = uint16(selectorCount);
         }
         // If last selector slot is not full
-        if (selectorCount % 8 > 0) {
+        if (selectorCount & 7 > 0) {
             ds.selectorSlots[selectorCount >> 3] = selectorSlot;
         }
         emit DiamondCut(_diamondCut, _init, _calldata);
