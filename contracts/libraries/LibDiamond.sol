@@ -119,7 +119,7 @@ library LibDiamond {
                 require(address(bytes20(oldFacet)) == address(0), "LibDiamondCut: Can't add function that already exists");
                 // add facet for selector
                 ds.facets[selector] = bytes20(_newFacetAddress) | bytes32(_selectorCount);
-                uint256 selectorInSlotPosition = (_selectorCount & 7) * 32;
+                uint256 selectorInSlotPosition = (_selectorCount & 7) << 5;
                 // clear selector position in slot and add selector
                 _selectorSlot = (_selectorSlot & ~(CLEAR_SELECTOR_MASK >> selectorInSlotPosition)) | (bytes32(selector) >> selectorInSlotPosition);
                 // if slot is full then write it to storage
@@ -167,7 +167,7 @@ library LibDiamond {
                     require(address(bytes20(oldFacet)) != address(this), "LibDiamondCut: Can't remove immutable function");
                     // replace selector with last selector in ds.facets
                     // gets the last selector
-                    lastSelector = bytes4(_selectorSlot << (selectorInSlotIndex * 32));
+                    lastSelector = bytes4(_selectorSlot << (selectorInSlotIndex << 5));
                     if (lastSelector != selector) {
                         // update last selector slot position info
                         ds.facets[lastSelector] = (oldFacet & CLEAR_ADDRESS_MASK) | bytes20(ds.facets[lastSelector]);
@@ -175,7 +175,7 @@ library LibDiamond {
                     delete ds.facets[selector];
                     uint256 oldSelectorCount = uint16(uint256(oldFacet));
                     oldSelectorsSlotCount = oldSelectorCount >> 3;
-                    oldSelectorInSlotPosition = (oldSelectorCount & 7) * 32;
+                    oldSelectorInSlotPosition = (oldSelectorCount & 7) << 5;
                 }
                 if (oldSelectorsSlotCount != selectorSlotCount) {
                     bytes32 oldSelectorSlot = ds.selectorSlots[oldSelectorsSlotCount];
