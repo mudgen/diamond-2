@@ -1,6 +1,6 @@
 # Gas Optimized Diamond-2
 
-This is the gas-optimized reference implementation for [EIP-2535 Diamonds](https://github.com/ethereum/EIPs/issues/2535). To learn about other implementations go here: https://github.com/mudgen/diamond
+This is the gas-optimized reference implementation for [EIP-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535). To learn about other implementations go here: https://github.com/mudgen/diamond
 
 Specifically this is a gas efficient implementation of the `diamondCut` function. Adding/replacing/removing is optimized to take the least gas.
 
@@ -26,7 +26,7 @@ To understand the code of this implementation it is recommended to first underst
 
 ## How to Get Started Making Your Diamond
 
-1. The most important thing is reading and understanding the [EIP-2535 Diamonds](https://github.com/ethereum/EIPs/issues/2535). If something is unclear let me know!
+1. The most important thing is reading and understanding the [EIP-2535 Diamonds](https://eips.ethereum.org/EIPS/eip-2535). If something is unclear let me know!
 
 2. The second important thing is using an EIP-2535 Diamonds reference implementation. You are at the right place because this is the README for the gas-optimized reference implementation.
 
