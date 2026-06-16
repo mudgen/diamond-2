@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.1;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
 /******************************************************************************\
 * Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
@@ -34,7 +33,7 @@ library LibDiamond {
 
     function diamondStorage() internal pure returns (DiamondStorage storage ds) {
         bytes32 position = DIAMOND_STORAGE_POSITION;
-        assembly {
+        assembly ("memory-safe") {
             ds.slot := position
         }
     }
@@ -211,11 +210,12 @@ library LibDiamond {
             if (_init != address(this)) {
                 enforceHasContractCode(_init, "LibDiamondCut: _init address has no code");
             }
-            (bool success, bytes memory error) = _init.delegatecall(_calldata);
+            (bool success, bytes memory callerror) = _init.delegatecall(_calldata);
             if (!success) {
-                if (error.length > 0) {
-                    // bubble up the error
-                    revert(string(error));
+                if (callerror.length > 0) {
+                    assembly ("memory-safe") {
+                        revert(add(callerror, 32), mload(callerror))
+                    }
                 } else {
                     revert("LibDiamondCut: _init function reverted");
                 }
@@ -225,7 +225,7 @@ library LibDiamond {
 
     function enforceHasContractCode(address _contract, string memory _errorMessage) internal view {
         uint256 contractSize;
-        assembly {
+        assembly ("memory-safe") {
             contractSize := extcodesize(_contract)
         }
         require(contractSize > 0, _errorMessage);

@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.1;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
 /******************************************************************************\
 * Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
@@ -40,21 +39,23 @@ contract Diamond {
     fallback() external payable {
         LibDiamond.DiamondStorage storage ds;
         bytes32 position = LibDiamond.DIAMOND_STORAGE_POSITION;
-        assembly {
+        assembly ("memory-safe") {
             ds.slot := position
         }
         address facet = address(bytes20(ds.facets[msg.sig]));
         require(facet != address(0), "Diamond: Function does not exist");
-        assembly {
-            calldatacopy(0, 0, calldatasize())
-            let result := delegatecall(gas(), facet, 0, calldatasize(), 0, 0)
-            returndatacopy(0, 0, returndatasize())
+        assembly ("memory-safe") {
+            let ptr := mload(0x40)
+            calldatacopy(ptr, 0, calldatasize())
+            let result := delegatecall(gas(), facet, ptr, calldatasize(), 0, 0)
+            let size := returndatasize()
+            returndatacopy(ptr, 0, size)
             switch result
                 case 0 {
-                    revert(0, returndatasize())
+                    revert(ptr, size)
                 }
                 default {
-                    return(0, returndatasize())
+                    return(ptr, size)
                 }
         }
     }    
