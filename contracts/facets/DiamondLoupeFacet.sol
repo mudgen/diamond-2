@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.7.1;
-pragma experimental ABIEncoderV2;
+pragma solidity ^0.8.0;
 
 /******************************************************************************\
 * Author: Nick Mudge <nick@perfectabstractions.com> (https://twitter.com/mudgen)
@@ -64,12 +63,12 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
             uint256 numSelectors = numFacetSelectors[facetIndex];
             bytes4[] memory selectors = facets_[facetIndex].functionSelectors;
             // setting the number of selectors
-            assembly {
+            assembly ("memory-safe") {
                 mstore(selectors, numSelectors)
             }
         }
         // setting the number of facets
-        assembly {
+        assembly ("memory-safe") {
             mstore(facets_, numFacets)
         }
     }
@@ -99,7 +98,7 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
             }
         }
         // Set the number of selectors in the array
-        assembly {
+        assembly ("memory-safe") {
             mstore(_facetFunctionSelectors, numSelectors)
         }
     }
@@ -137,7 +136,7 @@ contract DiamondLoupeFacet is IDiamondLoupe, IERC165 {
             }
         }
         // Set the number of facet addresses in the array
-        assembly {
+        assembly ("memory-safe") {
             mstore(facetAddresses_, numFacets)
         }
     }
